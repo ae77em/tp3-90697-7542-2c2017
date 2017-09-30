@@ -38,3 +38,5 @@ src/tp-test.sh
 CMake*
 cmake*/
 *.zip
+src/client
+src/server
