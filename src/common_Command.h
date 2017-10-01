@@ -18,9 +18,9 @@ private:
     
     u_int16_t bits_checksum_tarjeta;
     u_int16_t bits_checksum_monto; 
-    u_int16_t bits_operacion;   
-    
+
     card_data_map_t data_map;
+    
 public:
     Command();
     explicit Command(file_registry_t& fr);

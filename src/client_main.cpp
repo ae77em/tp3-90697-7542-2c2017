@@ -1,15 +1,11 @@
 #include "client_BinaryDataFile.h"
 #include "common_Command.h"
 #include "common_Socket.h"
-#include "common_Structs.h"
 
-#include <cstdlib>
 #include <iostream>
 #include <string>
 
 int main(int argc, char *argv[]){
-    int status = EXIT_SUCCESS;
-
     try {
         if (argc != 4){
             throw std::string("Cantidad de parámetros incorrecta.");
@@ -55,16 +51,13 @@ int main(int argc, char *argv[]){
                 std::cout << std::string(response) << std::endl; // imprimo data
             } catch (std::string ex) {
                 std::cerr << ex << std::endl;
-                status = EXIT_FAILURE;
             }
         }
     } catch(std::string ex) {
         std::cerr << ex << std::endl;
-        status = EXIT_FAILURE;
     } catch(...) {
         std::cerr << "Ocurrió un error desconocido en el cliente.";
-        status = EXIT_FAILURE;
     }
 
-    return status;
+    return EXIT_SUCCESS;
 }

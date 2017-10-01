@@ -18,9 +18,6 @@ public:
     virtual ~BinaryDataFile();
     
     void read();
-    void write(file_registry_t& registry);
-    bool eof();
-    bool good();
     bool has_data();
     file_registry_t &get_file_registry();
     

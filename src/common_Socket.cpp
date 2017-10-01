@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <memory.h>
 #include <iostream>
+#include <string>
 
 Socket::Socket() {
     this->socket = ::socket(AF_INET, SOCK_STREAM, 0);

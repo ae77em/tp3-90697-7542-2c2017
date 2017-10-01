@@ -5,11 +5,8 @@
 
 #include "common_Socket.h"
 #include "common_Command.h"
-#include "common_Structs.h"
 
 int main(int argc, char *argv[]){
-    int status = EXIT_SUCCESS;
-
     try {
         if (argc != 2){
             throw std::string("Cantidad de parámetros incorrecta.");
@@ -53,11 +50,19 @@ int main(int argc, char *argv[]){
 
                     response = command.execute(command_received);
 
-                    std::cout << command_received << " -> " << response << std::endl;
+                    std::cout
+                            << command_received
+                            << " -> "
+                            << response
+                            << std::endl;
                 }
             } catch (std::string ex) {
                 response = ex;
-                std::cerr << command_received << " -> " << response << std::endl;
+                std::cerr
+                        << command_received
+                        << " -> "
+                        << response
+                        << std::endl;
             }
 
             client.send(response.c_str(), response.length());
@@ -65,11 +70,9 @@ int main(int argc, char *argv[]){
         }
     } catch (std::string ex) {
         std::cerr << ex;
-        status = EXIT_FAILURE;
     } catch (...) {
         std::cerr << "Ocurrió un error desconocido en el servidor.";
-        status = EXIT_FAILURE;
     }
 
-    return status;
+    return EXIT_SUCCESS;
 }

@@ -19,7 +19,7 @@ public:
     /*
      * Crea el socket con el filedescriptor pasado como parámetro
      */
-    Socket(int socket);
+    explicit Socket(int socket);
     
     /*
      * Apaga y cierra la conexión.
