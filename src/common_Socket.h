@@ -17,7 +17,12 @@ public:
     Socket();
     
     /*
-     * Cierra la conexión.
+     * Crea el socket con el filedescriptor pasado como parámetro
+     */
+    Socket(int socket);
+    
+    /*
+     * Apaga y cierra la conexión.
      */
     ~Socket();
     
@@ -57,6 +62,11 @@ public:
      * ordenada.
      */
     void shutdown();
+    
+    /*
+     * Cierra la conexión.
+     */
+    void close();
     
     /*
      * Se utiliza para cerrar el envío de datos en forma ordenada.

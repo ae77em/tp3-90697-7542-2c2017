@@ -1,50 +1,67 @@
-#include <iostream>
 #include <cstdlib>
+#include <cstring>
+#include <iostream>
 #include <string>
 
 #include "common_Socket.h"
 #include "common_Command.h"
+#include "common_Structs.h"
 
-#define MAX_BUFFER_SIZE 30
-
-int main(int argc, char *argv[]){
+int server_main(int argc, char *argv[]){
     int status = EXIT_SUCCESS;
 
     try {
-        if (argc != 2){
-            throw "Cantidad de parámetros incorrecta.";
+        if (argc != 3){
+            throw std::string("Cantidad de parámetros incorrecta.");
         }
 
-        std::string data_received;
-        char aux_data_received[MAX_BUFFER_SIZE] = {0};
-        char op;
+        char aux_command_received[MAX_BUFFER_SIZE] = {0};
+        std::string command_received;
+        std::string response;
+        char op[2];
         uint16_t lenght;
-
-        //BinaryDataFile file(filename);
-
         uint16_t port = atoi(argv[2]);
 
         Socket server;
-        Socket client;
+        Socket client(-1);
 
         server.bind_and_listen(port);
         server.accept(client);
 
+        Command command;
+
         bool is_finished = false;
+
         while (!is_finished){
-            server.receive(aux_data_received, 1);
-            op = aux_data_received[0];
+            try {
+                client.receive(aux_command_received, 1);
 
-            lenght = Command::get_size_of(op);
+                is_finished = strlen(aux_command_received) == 0;
 
-            server.receive(aux_data_received, lenght);
+                if (!is_finished){
+                    strncpy(op, aux_command_received, 1);
+                    op[1]= '\0';
 
-            data_received = std::string(aux_data_received);
+                    lenght = Command::get_size_of(op[0]);
 
-            //Command command()
+                    client.receive(aux_command_received, lenght);
+
+                    command_received.assign(std::string(op));
+                    command_received.append(std::string(aux_command_received));
+
+                    response = command.execute(command_received);
+
+                    std::cout << command_received << " -> " << response << std::endl;
+                }
+            } catch (std::string ex) {
+                response = ex;
+                std::cerr << command_received << " -> " << response << std::endl;
+            }
+
+            client.send(response.c_str(), response.length());
+            aux_command_received[0] = '\0';
         }
-
-    } catch (std::string ex){
+    } catch (std::string ex) {
         std::cerr << ex;
         status = EXIT_FAILURE;
     } catch (...) {

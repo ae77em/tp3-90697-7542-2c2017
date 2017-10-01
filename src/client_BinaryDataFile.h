@@ -12,18 +12,18 @@ private:
     std::fstream file;
 
 public:
-    BinaryDataFile(const std::string& fn);
+    explicit BinaryDataFile(const std::string& fn);
     virtual ~BinaryDataFile();
     
     void read();
     void write(file_registry_t& registry);
+    bool eof();
     bool good();
     file_registry_t &get_file_registry();
     
 private:
     BinaryDataFile() = delete;
-    BinaryDataFile(const BinaryDataFile& orig) = delete;
-    
+    BinaryDataFile(const BinaryDataFile& orig) = delete;    
 };
 
 #endif /* CLIENT_FILE_HANDLER_H */

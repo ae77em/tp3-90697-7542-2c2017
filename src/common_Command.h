@@ -19,16 +19,18 @@ private:
     u_int16_t bits_checksum_monto; 
     u_int16_t bits_operacion;   
     
+    card_data_map_t data_map;
 public:
-    Command(file_registry_t& r);
+    Command();
+    explicit Command(file_registry_t& fr);
     virtual ~Command();
     
     std::string get_formatted_command();
     const uint16_t get_size();
     static uint16_t get_size_of(char code);
+    std::string execute(const std::string& cmd);
     
 private:
-    Command() = delete;
     Command(const Command& orig) = delete;    
 };
 

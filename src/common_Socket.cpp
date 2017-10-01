@@ -9,17 +9,23 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <memory.h>
+#include <iostream>
 
 Socket::Socket() {
     this->socket = ::socket(AF_INET, SOCK_STREAM, 0);
 
     if (this->socket == -1) {
-        throw "No se pudo abrir el socket.";
+        throw std::string("No se pudo abrir el socket.");
     }
 }
 
+Socket::Socket(int socket) {
+    this->socket = socket;
+}
+
 Socket::~Socket() {
-    ::close(this->socket);
+    shutdown();
+    close();
 }
 
 void Socket::bind_and_listen(unsigned short port) {
@@ -31,17 +37,17 @@ void Socket::bind_and_listen(unsigned short port) {
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = INADDR_ANY;
 
-    bind_result = bind(this->socket,
+    bind_result = ::bind(this->socket,
             (struct sockaddr *) &addr,
             (socklen_t)sizeof (struct sockaddr));
 
     if (bind_result < 0) {
-        throw "Error al realizar el bind.";
+        throw std::string("Error al realizar el bind.");
     } else {
         int listen_status = ::listen(this->socket, 1);
 
         if (listen_status < 0) {
-            throw "Error al realizar el listen.";
+            throw std::string("Error al realizar el listen.");
         }
     }
 }
@@ -50,7 +56,7 @@ void Socket::connect(const char* host_name, unsigned short port) {
     struct hostent *he;
 
     if ((he = ::gethostbyname(host_name)) == NULL) {
-        throw "Error al obtener el host.";
+        throw std::string("Error al obtener el host.");
     } else {
         struct sockaddr_in their_addr;
         int conn_status;
@@ -66,7 +72,7 @@ void Socket::connect(const char* host_name, unsigned short port) {
                 sizeof (struct sockaddr));
 
         if (conn_status == -1) {
-            throw "Error al realizar el connect.";
+            throw std::string("Error al realizar el connect.");
         }
     }
 }
@@ -77,7 +83,7 @@ void Socket::accept(Socket &accepted_socket) {
     newsockfd = ::accept(this->socket, NULL, NULL);
 
     if (newsockfd < 0) {
-        throw "Error al realizar el accept.";
+        throw std::string("Error al realizar el accept.");
     } else {
         accepted_socket.set_socket(newsockfd);
     }
@@ -97,7 +103,7 @@ void Socket::send(const char* buffer, size_t length) {
         if (s == 0) {
             is_open_socket = false;
         } else if (s < 0) {
-            throw "Error al realizar el send.";
+            throw std::string("Error al realizar el send.");
         } else {
             sent += s;
         }
@@ -118,7 +124,7 @@ void Socket::receive(char* buffer, size_t length) {
         if (r == 0) {
             is_open_socket = false;
         } else if (r < 0) {
-            throw "Error al realizar el receive.";
+            throw std::string("Error al realizar el receive.");
         } else {
             received += r;
         }
@@ -127,6 +133,10 @@ void Socket::receive(char* buffer, size_t length) {
 
 void Socket::shutdown() {
     ::shutdown(this->socket, SHUT_RDWR);
+}
+
+void Socket::close(){
+    ::close(this->socket);
 }
 
 void Socket::shutdown_send() {
