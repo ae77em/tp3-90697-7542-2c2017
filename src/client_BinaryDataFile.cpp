@@ -9,9 +9,17 @@
 BinaryDataFile::BinaryDataFile(const std::string& fn) {
     file.open(fn.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 
-    if (!file.good()){
+    if (!file.is_open()){
         throw std::string("No se pudo abrir el archivo especificado.");
     }
+
+    bytes_readed = 0;
+    std::streampos begin,end;
+    begin = file.tellg();
+    file.seekg (0, std::ios::end);
+    end = file.tellg();
+    file_size = end - begin;
+    file.seekg (0, std::ios::beg);
 
     file_registry.metadata = 0;
     file_registry.amount = 0;
@@ -23,11 +31,6 @@ BinaryDataFile::~BinaryDataFile() {
 }
 
 void BinaryDataFile::read(){
-
-    if (file.eof()){
-        return;
-    }
-
     uint16_t checksum;
     uint32_t card;
     uint32_t amount;
@@ -44,8 +47,11 @@ void BinaryDataFile::read(){
     uint16_t op = (file_registry.metadata & 0x38) >> 3;
     // si corresponde leo el monto
     if (op == 0 || op == 1 || op == 4 ){
-        file.read(reinterpret_cast<char*>(&amount) , sizeof(uint32_t));
+        file.read(reinterpret_cast<char*>(&amount), sizeof(uint32_t));
         file_registry.amount = ntohl(amount);
+        bytes_readed += 10;
+    } else {
+        bytes_readed += 6;
     }
 }
 
@@ -57,6 +63,10 @@ bool BinaryDataFile::eof(){
 
 bool BinaryDataFile::good(){
     return file.good();
+}
+
+bool BinaryDataFile::has_data(){
+    return file.tellg() < file_size;
 }
 
 file_registry_t& BinaryDataFile::get_file_registry() {

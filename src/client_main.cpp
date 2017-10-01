@@ -7,21 +7,21 @@
 #include <iostream>
 #include <string>
 
-int client_main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     int status = EXIT_SUCCESS;
 
     try {
-        if (argc != 5){
+        if (argc != 4){
             throw std::string("Cantidad de parámetros incorrecta.");
         }
 
-        std::string filename = std::string(argv[4]);
+        std::string filename = std::string(argv[3]);
         std::string formatted_command;
 
         BinaryDataFile file(filename);
 
-        std::string host = std::string(argv[2]);
-        uint16_t port = atoi(argv[3]);
+        std::string host = std::string(argv[1]);
+        uint16_t port = atoi(argv[2]);
 
         Socket client;
         client.connect(host.c_str(), port);
@@ -29,7 +29,7 @@ int client_main(int argc, char *argv[]){
         int lenght;
         char response[MAX_BUFFER_SIZE] = {0};
 
-        while (!file.eof() && file.good()){
+        while (file.has_data()){
             try {
                 file.read();
 
@@ -37,7 +37,7 @@ int client_main(int argc, char *argv[]){
 
                 formatted_command = command.get_formatted_command();
 
-                client.send(formatted_command.c_str(), command.get_size()+1);
+                client.send(formatted_command.c_str(), command.get_size());
 
                 client.receive(response, 1);
                 response[1] = '\0';
@@ -46,20 +46,20 @@ int client_main(int argc, char *argv[]){
 
                 lenght = 5; // tamaño del mensaje de error...
                 if (response[0] != 'E'){
-                    lenght = Command::get_size_of(response[0]);
+                    lenght = Command::get_size_of_response(response[0]) - 1;
                 }
-                
+
                 client.receive(response, lenght);
                 response[lenght] = '\0';
 
                 std::cout << std::string(response) << std::endl; // imprimo data
             } catch (std::string ex) {
-                std::cerr << ex;
+                std::cerr << ex << std::endl;
                 status = EXIT_FAILURE;
             }
         }
     } catch(std::string ex) {
-        std::cerr << ex;
+        std::cerr << ex << std::endl;
         status = EXIT_FAILURE;
     } catch(...) {
         std::cerr << "Ocurrió un error desconocido en el cliente.";

@@ -7,11 +7,11 @@
 #include "common_Command.h"
 #include "common_Structs.h"
 
-int server_main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     int status = EXIT_SUCCESS;
 
     try {
-        if (argc != 3){
+        if (argc != 2){
             throw std::string("Cantidad de parámetros incorrecta.");
         }
 
@@ -20,7 +20,7 @@ int server_main(int argc, char *argv[]){
         std::string response;
         char op[2];
         uint16_t lenght;
-        uint16_t port = atoi(argv[2]);
+        uint16_t port = atoi(argv[1]);
 
         Socket server;
         Socket client(-1);
@@ -42,10 +42,12 @@ int server_main(int argc, char *argv[]){
                     strncpy(op, aux_command_received, 1);
                     op[1]= '\0';
 
-                    lenght = Command::get_size_of(op[0]);
+                    lenght = Command::get_size_of_request(op[0]) - 1;
 
                     client.receive(aux_command_received, lenght);
+                    aux_command_received[lenght] = '\0';
 
+                    command_received = "";
                     command_received.assign(std::string(op));
                     command_received.append(std::string(aux_command_received));
 

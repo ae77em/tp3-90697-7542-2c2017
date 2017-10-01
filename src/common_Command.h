@@ -8,7 +8,8 @@
 
 class Command {
 private:
-    static const std::map<char, uint16_t> command_lenght;
+    static const std::map<char, uint16_t> request_lenght;
+    static const std::map<char, uint16_t> response_lenght;
     static const std::map<uint16_t , char> command_code;
     char code;
     int card;
@@ -27,7 +28,8 @@ public:
     
     std::string get_formatted_command();
     const uint16_t get_size();
-    static uint16_t get_size_of(char code);
+    static uint16_t get_size_of_request(char code);
+    static uint16_t get_size_of_response(char code);
     std::string execute(const std::string& cmd);
     
 private:

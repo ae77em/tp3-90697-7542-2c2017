@@ -40,3 +40,5 @@ cmake*/
 *.zip
 src/client
 src/server
+src/*.bin
+src/error.txt
