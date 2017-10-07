@@ -29,11 +29,20 @@ public:
     /*
      * bind: Enlaza el socket identificado por el filedescriptor con una 
      * dirección y puerto locales.
-     *
-     * listen: configura el socket para recibir conexiones en la dirección y 
-     * puerto previamente determinada mediante bind().
      */    
-    void bind_and_listen(unsigned short port);
+    void bind(unsigned short port);
+    
+    /*
+     * listen: configura el socket para recibir *n* conexiones en la dirección y 
+     * puerto previamente determinada mediante bind().
+     */
+    void listen(unsigned short n);
+    
+    /*
+     * listen: configura el socket para recibir una conexión en la dirección y 
+     * puerto previamente determinada mediante bind().
+     */
+    void listen();
     
     /*
      * Conecta el socket a la dirección y puerto destino.
@@ -55,7 +64,7 @@ public:
     /*
      * Recibe datos a través del socket.
      */
-    void receive(char* buffer, size_t length);
+    int receive(char* buffer, size_t length);
     
     /*
      * Se utiliza para cerrar el envío y la recepción de datos en forma 

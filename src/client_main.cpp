@@ -2,22 +2,24 @@
 #include "common_Command.h"
 #include "common_Socket.h"
 
+#include "client_main.h"
+
 #include <iostream>
 #include <string>
 
-int main(int argc, char *argv[]){
+int client_main(int argc, char *argv[]){
     try {
-        if (argc != 4){
+        if (argc != 5){
             throw std::string("Cantidad de parámetros incorrecta.");
         }
 
-        std::string filename = std::string(argv[3]);
+        std::string filename = std::string(argv[4]);
         std::string formatted_command;
 
         BinaryDataFile file(filename);
 
-        std::string host = std::string(argv[1]);
-        uint16_t port = atoi(argv[2]);
+        std::string host = std::string(argv[2]);
+        uint16_t port = atoi(argv[3]);
 
         Socket client;
         client.connect(host.c_str(), port);

@@ -2,77 +2,64 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "common_Socket.h"
 #include "common_Command.h"
+#include "server_RequestProccessor.h"
 
-int main(int argc, char *argv[]){
+#include "server_main.h"
+
+int server_main(int argc, char *argv[]){
+
+    Command *command = new Command();
+
     try {
-        if (argc != 2){
+        if (argc != 3){
             throw std::string("Cantidad de parámetros incorrecta.");
         }
 
-        char aux_command_received[MAX_BUFFER_SIZE] = {0};
-        std::string command_received;
-        std::string response;
-        char op[2];
-        uint16_t lenght;
-        uint16_t port = atoi(argv[1]);
+        uint16_t port = atoi(argv[2]);
 
         Socket server;
-        Socket client(-1);
 
-        server.bind_and_listen(port);
-        server.accept(client);
+        server.bind(port);
+        server.listen();
 
-        Command command;
+        std::vector<RequestProccessor*> threads;
 
-        bool is_finished = false;
+        bool is_finished;
+        char op[2];
 
-        while (!is_finished){
-            try {
-                client.receive(aux_command_received, 1);
+        while(1){
+            Socket *client = new Socket(-1);
+            server.accept(*client);
 
-                is_finished = strlen(aux_command_received) == 0;
+            client->receive(op, 1);
+            op[1] = '\0';
 
-                if (!is_finished){
-                    strncpy(op, aux_command_received, 1);
-                    op[1]= '\0';
+            is_finished = (op[0] == 'q');
 
-                    lenght = Command::get_size_of_request(op[0]) - 1;
+            if (!is_finished){
+                RequestProccessor *rp = new RequestProccessor(op[0], *client, command);
+                threads.push_back(rp);
 
-                    client.receive(aux_command_received, lenght);
-                    aux_command_received[lenght] = '\0';
-
-                    command_received = "";
-                    command_received.assign(std::string(op));
-                    command_received.append(std::string(aux_command_received));
-
-                    response = command.execute(command_received);
-
-                    std::cout
-                            << command_received
-                            << " -> "
-                            << response
-                            << std::endl;
+                rp->start();
+            } else {
+                for (RequestProccessor *thread : threads){
+                    thread->join();
+                    delete thread;
                 }
-            } catch (std::string ex) {
-                response = ex;
-                std::cerr
-                        << command_received
-                        << " -> "
-                        << response
-                        << std::endl;
+                break;
             }
-
-            client.send(response.c_str(), response.length());
-            aux_command_received[0] = '\0';
         }
     } catch (std::string ex) {
         std::cerr << ex;
     } catch (...) {
         std::cerr << "Ocurrió un error desconocido en el servidor.";
     }
+
+    delete command;
 
     return EXIT_SUCCESS;
 }

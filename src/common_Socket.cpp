@@ -18,6 +18,7 @@ Socket::Socket() {
     if (this->socket == -1) {
         throw std::string("No se pudo abrir el socket.");
     }
+    std::cout << "creo socket " << std::to_string(this->socket) << std::endl;
 }
 
 Socket::Socket(int socket) {
@@ -25,11 +26,12 @@ Socket::Socket(int socket) {
 }
 
 Socket::~Socket() {
+    std::cout << "destruyo socket " << std::to_string(this->socket) << std::endl;
     shutdown();
     close();
 }
 
-void Socket::bind_and_listen(unsigned short port) {
+void Socket::bind(unsigned short port) {
     int bind_result = 0;
     struct sockaddr_in addr;
 
@@ -44,13 +46,19 @@ void Socket::bind_and_listen(unsigned short port) {
 
     if (bind_result < 0) {
         throw std::string("Error al realizar el bind.");
-    } else {
-        int listen_status = ::listen(this->socket, 1);
-
-        if (listen_status < 0) {
-            throw std::string("Error al realizar el listen.");
-        }
     }
+}
+
+void Socket::listen(unsigned short n) {
+    int listen_status = ::listen(this->socket, n);
+
+    if (listen_status < 0) {
+        throw std::string("Error al realizar el listen.");
+    }
+}
+
+void Socket::listen() {
+    listen(1);
 }
 
 void Socket::connect(const char* host_name, unsigned short port) {
@@ -111,7 +119,7 @@ void Socket::send(const char* buffer, size_t length) {
     }
 }
 
-void Socket::receive(char* buffer, size_t length) {
+int Socket::receive(char* buffer, size_t length) {
     int received = 0;
     int r = 0;
     bool is_open_socket = true;
@@ -130,6 +138,8 @@ void Socket::receive(char* buffer, size_t length) {
             received += r;
         }
     }
+
+    return received;
 }
 
 void Socket::shutdown() {
