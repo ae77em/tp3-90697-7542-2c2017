@@ -1,5 +1,5 @@
 #include "client_BinaryDataFile.h"
-#include "common_Command.h"
+#include "common_Operation.h"
 #include "common_Socket.h"
 
 #include "client_main.h"
@@ -7,31 +7,30 @@
 #include <iostream>
 #include <string>
 
-int client_main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     try {
-        if (argc != 5){
+        if (argc != 4){
             throw std::string("Cantidad de parámetros incorrecta.");
         }
 
-        std::string filename = std::string(argv[4]);
-        std::string formatted_command;
+        std::string host = std::string(argv[1]);
+        uint16_t port = atoi(argv[2]);
+        std::string filename = std::string(argv[3]);
 
         BinaryDataFile file(filename);
-
-        std::string host = std::string(argv[2]);
-        uint16_t port = atoi(argv[3]);
 
         Socket client;
         client.connect(host.c_str(), port);
 
         int lenght;
         char response[MAX_BUFFER_SIZE] = {0};
+        std::string formatted_command;
 
         while (file.has_data()){
             try {
                 file.read();
 
-                Command command(file.get_file_registry());
+                Operation command(file.get_file_registry());
 
                 formatted_command = command.get_formatted_command();
 
@@ -44,7 +43,7 @@ int client_main(int argc, char *argv[]){
 
                 lenght = 5; // tamaño del mensaje de error...
                 if (response[0] != 'E'){
-                    lenght = Command::get_size_of_response(response[0]) - 1;
+                    lenght = Operation::get_size_of_response(response[0]) - 1;
                 }
 
                 client.receive(response, lenght);

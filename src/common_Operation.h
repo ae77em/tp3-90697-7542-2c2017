@@ -1,12 +1,12 @@
-#ifndef COMMON_COMMAND_H
-#define COMMON_COMMAND_H
+#ifndef COMMON_OPERATION_H
+#define COMMON_OPERATION_H
 
 #include "common_Structs.h"
 
 #include <string>
 #include <map>
 
-class Command {
+class Operation {
 private:
     static const std::map<char, uint16_t> request_lenght;
     static const std::map<char, uint16_t> response_lenght;
@@ -22,9 +22,9 @@ private:
     card_data_map_t data_map;
     
 public:
-    Command();
-    explicit Command(file_registry_t& fr);
-    virtual ~Command();
+    Operation();
+    explicit Operation(file_registry_t& fr);
+    virtual ~Operation();
     
     std::string get_formatted_command();
     const uint16_t get_size();
@@ -33,8 +33,8 @@ public:
     std::string execute(const std::string& cmd);
     
 private:
-    Command(const Command& orig) = delete;    
+    Operation(const Operation& orig) = delete;    
 };
 
-#endif /* COMMON_COMMAND_H */
+#endif /* COMMON_OPERATION_H */
 

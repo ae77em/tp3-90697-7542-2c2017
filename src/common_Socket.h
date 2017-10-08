@@ -53,8 +53,10 @@ public:
     
     /*
      * Espera una conexión en el socket previamente configurado con listen().
+     * Retorna el puntero al nuevo socket creado, en caso de haber una 
+     * conexión nueva.
      */
-    void accept(Socket& accepted_socket);
+    int accept();
     
     /*
      * Envía datos a través del socket

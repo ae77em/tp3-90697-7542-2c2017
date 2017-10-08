@@ -1,5 +1,7 @@
 #include "common_Socket.h"
 
+#include "common_Exceptions.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -11,14 +13,14 @@
 #include <memory.h>
 #include <iostream>
 #include <string>
+#include <exception>
 
 Socket::Socket() {
     this->socket = ::socket(AF_INET, SOCK_STREAM, 0);
 
     if (this->socket == -1) {
-        throw std::string("No se pudo abrir el socket.");
+        throw newsocket_exception();
     }
-    std::cout << "creo socket " << std::to_string(this->socket) << std::endl;
 }
 
 Socket::Socket(int socket) {
@@ -26,8 +28,6 @@ Socket::Socket(int socket) {
 }
 
 Socket::~Socket() {
-    std::cout << "destruyo socket " << std::to_string(this->socket) << std::endl;
-    shutdown();
     close();
 }
 
@@ -45,7 +45,7 @@ void Socket::bind(unsigned short port) {
             (socklen_t)sizeof (struct sockaddr));
 
     if (bind_result < 0) {
-        throw std::string("Error al realizar el bind.");
+        throw bind_exception();
     }
 }
 
@@ -53,7 +53,7 @@ void Socket::listen(unsigned short n) {
     int listen_status = ::listen(this->socket, n);
 
     if (listen_status < 0) {
-        throw std::string("Error al realizar el listen.");
+        throw listen_exception();
     }
 }
 
@@ -65,7 +65,7 @@ void Socket::connect(const char* host_name, unsigned short port) {
     struct hostent *he;
 
     if ((he = ::gethostbyname(host_name)) == NULL) {
-        throw std::string("Error al obtener el host.");
+        throw gethost_exception();
     } else {
         struct sockaddr_in their_addr;
         int conn_status;
@@ -81,21 +81,21 @@ void Socket::connect(const char* host_name, unsigned short port) {
                 sizeof (struct sockaddr));
 
         if (conn_status == -1) {
-            throw std::string("Error al realizar el connect.");
+            throw connect_exception();
         }
     }
 }
 
-void Socket::accept(Socket &accepted_socket) {
-    unsigned int newsockfd;
+int Socket::accept() {
+    int newsockfd;
 
     newsockfd = ::accept(this->socket, NULL, NULL);
 
     if (newsockfd < 0) {
-        throw std::string("Error al realizar el accept.");
-    } else {
-        accepted_socket.set_socket(newsockfd);
+        throw accept_exception();
     }
+
+    return newsockfd;
 }
 
 void Socket::send(const char* buffer, size_t length) {
@@ -103,7 +103,7 @@ void Socket::send(const char* buffer, size_t length) {
     int s = 0;
     bool is_open_socket = true;
 
-    while (sent < (int)length && is_open_socket) {
+    while (sent < (int) length && is_open_socket) {
         s = ::send(this->socket,
                 &buffer[sent],
                 length - sent,
@@ -112,7 +112,7 @@ void Socket::send(const char* buffer, size_t length) {
         if (s == 0) {
             is_open_socket = false;
         } else if (s < 0) {
-            throw std::string("Error al realizar el send.");
+            throw send_exception();
         } else {
             sent += s;
         }
@@ -124,7 +124,7 @@ int Socket::receive(char* buffer, size_t length) {
     int r = 0;
     bool is_open_socket = true;
 
-    while (received < (int)length && is_open_socket) {
+    while (received < (int) length && is_open_socket) {
         r = ::recv(this->socket,
                 &buffer[received],
                 length - received,
@@ -133,7 +133,7 @@ int Socket::receive(char* buffer, size_t length) {
         if (r == 0) {
             is_open_socket = false;
         } else if (r < 0) {
-            throw std::string("Error al realizar el receive.");
+            throw recv_exception();
         } else {
             received += r;
         }
@@ -143,22 +143,26 @@ int Socket::receive(char* buffer, size_t length) {
 }
 
 void Socket::shutdown() {
-    ::shutdown(this->socket, SHUT_RDWR);
+    if (this->socket >= 0) {
+        ::shutdown(this->socket, SHUT_RDWR);
+    }
 }
 
-void Socket::close(){
-    ::close(this->socket);
+void Socket::close() {
+    if (this->socket >= 0) {
+        ::close(this->socket);
+    }
 }
 
 void Socket::shutdown_send() {
     ::shutdown(this->socket, SHUT_WR);
 }
 
-int Socket::get_socket(){
+int Socket::get_socket() {
     return this->socket;
 }
 
-int Socket::set_socket(int s){
+int Socket::set_socket(int s) {
     this->socket = s;
     return this->socket;
 }

@@ -42,3 +42,4 @@ src/client
 src/server
 src/*.bin
 src/error.txt
+src/__server_std*
