@@ -17,9 +17,7 @@ private:
     uint16_t size;
     
     u_int16_t bits_checksum_tarjeta;
-    u_int16_t bits_checksum_monto; 
-
-    card_data_map_t data_map;
+    u_int16_t bits_checksum_monto;    
     
 public:
     Command();

@@ -31,7 +31,7 @@ function check_status() {
 }
 
 if [ "$valgrind_mode" == "valgrind" ]; then
-	valgrind_prefix="valgrind --tool=memcheck --trace-children=yes --track-fds=yes --time-stamp=yes --num-callers=20 --error-exitcode=$valgrind_error_code --leak-check=full --show-leak-kinds=all --leak-resolution=med"
+	valgrind_prefix="valgrind --tool=memcheck --trace-children=yes --track-fds=yes --time-stamp=yes --num-callers=20 --error-exitcode=$valgrind_error_code --leak-check=full --leak-resolution=med"
 	server_cmd="$valgrind_prefix --log-file=valgrind_server.out $server_cmd"
 	client_cmd="$valgrind_prefix "'--log-file=valgrind_client$n.out'" $client_cmd"
 fi
@@ -63,13 +63,13 @@ for (( n=0; n < $max_clientes; n++ )); do
         echo "nc $server_host $port 0<netcat$n.in >netcat$n.out"
         eval nc $server_host $port 0<netcat$n.in >netcat$n.out
         remote_status[$n]=$?
-    elif [ -f "../docs/entrada$n/client$n.in" ]; then
+    elif [ -f "client$n.in" ]; then
         echo -n "Running Client $n: "
-        if [ -f "../docs/entrada$n/client$n.args" ]; then
-            client_args=$(cat ../docs/entrada$n/client$n.args)
+        if [ -f "client$n.args" ]; then
+            client_args=$(cat client$n.args)
         fi
-        echo "$client_cmd $server_host $port $client_args 0<../docs/entrada$n/client$n.in >../docs/salida$n/client$n.out"
-        eval $client_cmd $server_host $port $client_args 0<../docs/entrada$n/client$n.in >../docs/salida$n/client$n.out
+        echo "$client_cmd $server_host $port $client_args 0<client$n.in >client$n.out"
+        eval $client_cmd $server_host $port $client_args 0<client$n.in >client$n.out
         remote_status[$n]=$?
 	fi
 done
@@ -93,7 +93,7 @@ fi
 
 for (( n=0; n < $max_clientes; n++ ));
 do
-    if [ -f "netcat$n.in" ] || [ -f "../docs/entrada$n/client$n.in" ]; then
+    if [ -f "netcat$n.in" ] || [ -f "client$n.in" ]; then
         status=${remote_status[$n]}
         check_status "Client/Netcat $n" $status
     fi
