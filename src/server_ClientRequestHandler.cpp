@@ -1,6 +1,4 @@
-#include "server_ClientRequestHandler.h"
-
-#include "common_Operation.h"
+#include "server_ClientRequestHandler.hcommon_Command#include "common_Command.h"
 
 #include <string>
 #include <cstring>
@@ -24,7 +22,7 @@ void ClientRequestHandler::run() {
             op = aux_op[0];
             aux_op[0] = '\0';
             
-            lenght = Operation::get_size_of_request(op) - 1;
+            lenght = Command::get_size_of_request(op) - 1;
 
             if (lenght != 0) {
                 client.receive(aux_command_received, lenght);

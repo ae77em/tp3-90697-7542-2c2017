@@ -1,8 +1,8 @@
-#ifndef SERVER_HANDLER_H
-#define SERVER_HANDLER_H
+#ifndef LISTENER_H
+#define LISTENER_H
 
 #include "common_Socket.h"
-#include "common_Operation.h"
+#include "common_Command.h"
 #include "server_ClientRequestHandler.h"
 
 #include <vector>
@@ -15,7 +15,7 @@ private:
     std::vector<Socket*> clients;
     
 public:
-    Listener(uint16_t port);
+    explicit Listener(uint16_t port);
     Listener(const Listener& orig);
     virtual ~Listener();
     

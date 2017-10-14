@@ -18,17 +18,14 @@ int main(int argc, char *argv[]){
         Listener listener(port);
         listener.start();
 
-        while(true){
-            if(std::cin.get() == 'q') {
+        while (true) {
+            if (std::cin.get() == 'q') {
                 break;
             }
         }
 
         listener.shutdown();
-        std::cout << "sali de shutdown listener..." << std::endl;
-        std::cout << "voy a hacer join de listener..." << std::endl;
         listener.join();
-        std::cout << "hice join de listener..." << std::endl;
     } catch (std::string ex) {
         std::cerr << ex;
     } catch (std::exception ex) {

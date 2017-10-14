@@ -1,4 +1,4 @@
-#include "common_Operation.h"
+#include "common_Command.h"
 
 #include <string>
 #include <sstream>
@@ -9,7 +9,7 @@
 #include <map>
 #include <iostream>
 
-const std::map<char, uint16_t> Operation::request_lenght = {
+const std::map<char, uint16_t> Command::request_lenght = {
   { 'A', 21 },
   { 'F', 21 },
   { 'P', 11 },
@@ -17,7 +17,7 @@ const std::map<char, uint16_t> Operation::request_lenght = {
   { 'S', 21 },
 };
 
-const std::map<char, uint16_t> Operation::response_lenght = {
+const std::map<char, uint16_t> Command::response_lenght = {
   { 'A', 21 },
   { 'F', 21 },
   { 'P', 21 },
@@ -25,7 +25,7 @@ const std::map<char, uint16_t> Operation::response_lenght = {
   { 'S', 21 },
 };
 
-const std::map<uint16_t, char> Operation::command_code = {
+const std::map<uint16_t, char> Command::command_code = {
   { 0, 'A' },
   { 1, 'F' },
   { 2, 'P' },
@@ -33,9 +33,9 @@ const std::map<uint16_t, char> Operation::command_code = {
   { 4, 'S' },
 };
 
-Operation::Operation(){ }
+Command::Command(){ }
 
-Operation::Operation(file_registry_t &fr){
+Command::Command(file_registry_t &fr){
     // 0x38     ->  0000000000111000
     uint16_t bits_operacion = (fr.metadata & 0x38) >> 3;
 
@@ -67,9 +67,9 @@ Operation::Operation(file_registry_t &fr){
     }
 }
 
-Operation::~Operation() { }
+Command::~Command() { }
 
-std::string Operation::get_formatted_command(){
+std::string Command::get_formatted_command(){
     std::string formatted_command = "";
     char card[11];
 
@@ -87,19 +87,19 @@ std::string Operation::get_formatted_command(){
     return formatted_command;
 }
 
-const uint16_t Operation::get_size(){
+const uint16_t Command::get_size(){
     return this->size;
 }
 
-uint16_t Operation::get_size_of_request(char code){
+uint16_t Command::get_size_of_request(char code){
     return request_lenght.at(code);
 }
 
-uint16_t Operation::get_size_of_response(char code){
+uint16_t Command::get_size_of_response(char code){
     return response_lenght.at(code);
 }
 
-std::string Operation::execute(const std::string& cmd) {
+std::string Command::execute(const std::string& cmd) {
     std::string op;
     op.assign(cmd.substr(0,1));
     uint32_t card = stoul(cmd.substr(1,10));

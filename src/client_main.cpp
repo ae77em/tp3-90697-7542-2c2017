@@ -1,5 +1,5 @@
 #include "client_BinaryDataFile.h"
-#include "common_Operation.h"
+#include "common_Command.h"
 #include "common_Socket.h"
 
 #include "client_main.h"
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
             try {
                 file.read();
 
-                Operation command(file.get_file_registry());
+                Command command(file.get_file_registry());
 
                 formatted_command = command.get_formatted_command();
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
 
                 lenght = 5; // tamaño del mensaje de error...
                 if (response[0] != 'E'){
-                    lenght = Operation::get_size_of_response(response[0]) - 1;
+                    lenght = Command::get_size_of_response(response[0]) - 1;
                 }
 
                 client.receive(response, lenght);

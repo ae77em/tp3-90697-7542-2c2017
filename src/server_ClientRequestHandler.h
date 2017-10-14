@@ -1,18 +1,18 @@
-#ifndef SERVER_REQUESTPROCCESSOR_H
-#define SERVER_REQUESTPROCCESSOR_H
+#ifndef SERVER_CLIENT_REQUEST_HANDLER_H
+#define SERVER_CLIENT_REQUEST_HANDLER_H
 
 #include "common_Thread.h"
 #include "common_Socket.h"
-#include "common_Operation.h"
+#include "common_Command.h"
 
 class ClientRequestHandler : public Thread {
 private:
     char op;
     Socket &client;
-    Operation command;
+    Command command;
     
 public:
-    ClientRequestHandler(Socket &client);
+    explicit ClientRequestHandler(Socket &client);
     virtual ~ClientRequestHandler();
     
     void run();
