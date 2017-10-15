@@ -13,7 +13,6 @@ BinaryDataFile::BinaryDataFile(const std::string& fn) {
         throw std::string("No se pudo abrir el archivo especificado.");
     }
 
-    bytes_readed = 0;
     std::streampos begin,end;
     begin = file.tellg();
     file.seekg(0, std::ios::end);
@@ -43,15 +42,12 @@ void BinaryDataFile::read(){
     file_registry.amount = 0;
 
     // 0x38 -> 00000000 00111000
-    //         00001000 00011000
     uint16_t op = (file_registry.metadata & 0x38) >> 3;
+
     // si corresponde leo el monto
     if ( op == 0 || op == 1 || op == 4 ){
         file.read(reinterpret_cast<char*>(&amount), sizeof(uint32_t));
         file_registry.amount = ntohl(amount);
-        bytes_readed += 10;
-    } else {
-        bytes_readed += 6;
     }
 }
 

@@ -22,5 +22,5 @@ private:
     ClientRequestHandler(const ClientRequestHandler& orig) = delete;
 };
 
-#endif /* SERVER_REQUESTPROCCESSOR_H */
+#endif /* SERVER_CLIENT_REQUEST_HANDLER_H */
 

@@ -65,16 +65,15 @@ Command::Command(file_registry_t &fr) {
     this->amount = fr.amount;
     this->size = request_lenght.at(code);
 
+    checkshum_ok = true;
     int count = (bits_mnt.count() != 32) ? bits_mnt.count() : 0;
     if (bits_checksum_monto != count) {
-        std::string fc = get_formatted_command();
-        throw fc.append(" -> E00001");
+        checkshum_ok = false;
     }
 
     count = (bits_trj.count() != 32) ? bits_trj.count() : 0;
     if (bits_checksum_tarjeta != count) {
-        std::string fc = get_formatted_command();
-        throw fc.append(" -> E00001");
+        checkshum_ok = false;
     }
 }
 
@@ -116,4 +115,8 @@ std::string Command::execute(const std::string& cmd) {
     std::string to_return = cds->execute_query(cmd);
 
     return to_return;
+}
+
+bool Command::is_checksum_ok(){
+    return checkshum_ok;
 }

@@ -8,7 +8,6 @@
 
 class CardDataStorage {
 private:
-    int counter = 0;
     card_data_map_t data_map;
     std::mutex m;
     static CardDataStorage* instance;

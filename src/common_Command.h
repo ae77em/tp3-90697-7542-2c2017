@@ -15,6 +15,7 @@ private:
     int card;
     int amount;
     uint16_t size;
+    bool checkshum_ok;
     
     u_int16_t bits_checksum_tarjeta;
     u_int16_t bits_checksum_monto;    
@@ -28,6 +29,7 @@ public:
     const uint16_t get_size();
     static uint16_t get_size_of_request(char code);
     static uint16_t get_size_of_response(char code);
+    bool is_checksum_ok();
     std::string execute(const std::string& cmd);
     
 private:

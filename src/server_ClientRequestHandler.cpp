@@ -37,7 +37,7 @@ void ClientRequestHandler::run() {
 
                 response = command.execute(command_received);
 
-                if(response.find(error_prefix) == std::string::npos){
+                if (response.find(error_prefix) == std::string::npos) {
                     std::cout
                         << command_received
                         << " -> "
@@ -50,12 +50,6 @@ void ClientRequestHandler::run() {
                         << response
                         << std::endl;
                 }
-            } else {
-                std::string ex = "La conexión del socket ";
-                ex.append(std::to_string(client.get_socket()));
-                ex.append(" se cerró.");
-
-                throw ex;
             }
         } catch (...) {
             std::cerr

@@ -27,13 +27,13 @@ int main(int argc, char *argv[]){
         std::string formatted_command;
 
         while (file.has_data()){
-            try {
-                file.read();
+            file.read();
 
-                Command command(file.get_file_registry());
+            Command command(file.get_file_registry());
 
-                formatted_command = command.get_formatted_command();
+            formatted_command = command.get_formatted_command();
 
+            if (command.is_checksum_ok()){
                 client.send(formatted_command.c_str(), command.get_size());
 
                 client.receive(response, 1);
@@ -50,8 +50,8 @@ int main(int argc, char *argv[]){
                 response[lenght] = '\0';
 
                 std::cout << std::string(response) << std::endl; // imprimo data
-            } catch (std::string ex) {
-                std::cerr << ex << std::endl;
+            } else  {
+                std::cerr << formatted_command << " -> E00001" << std::endl;
             }
         }
     } catch(std::string ex) {

@@ -35,7 +35,7 @@ std::string CardDataStorage::execute_query(std::string cmd) {
         if (it != data_map.end()) {
             int32_t amount = stoi(cmd.substr(11, 10));
             if (amount < 0 && (it->second + amount) < 0) {
-                throw std::string("E00003");
+                to_return.assign("E00003");
             } else {
                 it->second += amount;
                 snprintf(c, sizeof (c), "%010u", card);
